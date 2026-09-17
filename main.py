@@ -1,5 +1,3 @@
-#testing
-
 def main():
     print("Hello from pennys-project-data440!")
 
