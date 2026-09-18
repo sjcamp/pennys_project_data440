@@ -36,7 +36,7 @@ def compare_patterns(game_str, pattern1, pattern2):
             winning_indx = None
     return winning_pattern, winning_indx
 
-def remove_cards(game_str, winning_indx):
+def remove_cards(game_str, winning_indx): #maybe change later to .find to make it run faster 
     ''' 
     Removes all cards from a game string that come before the winning pattern, and the winning pattern itself. Returns the shortened string
     '''

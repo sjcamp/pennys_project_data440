@@ -8,7 +8,7 @@ def generate_data(seed,trials):
     Generates decks of shuffled cards according to specified number of trials and seed
     '''
     game_history = [] #initialize a list to store the shuffled decks
-    base_cards = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] #base cards to shuffle
+    base_cards = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] #base cards to shuffle, make more efficient with * 
     rng = np.random.default_rng(seed) #initialize random number generator
     for num in range(trials): #for loop to generate specified number of shuffled decks
         game = rng.permutation(base_cards) #shuffle the base cards
