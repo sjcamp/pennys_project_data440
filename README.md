@@ -3,6 +3,8 @@ First Data440 Project
 
 Explain Penney's Game and the two variations of the H-N Game. Do not assume the reader is already familiar with the game.
 
+Insert explanation here 
+
 Explain the purpose of our investigation.
 
 Give a brief "how-to" of how to run your code.
