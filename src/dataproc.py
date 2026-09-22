@@ -11,11 +11,11 @@ def game_to_string(packed_game):
     game_str = "".join(str(card)for card in unpacked_game[:52]) 
     return game_str
 
-def find_pattern(game_str, pattern):
+def find_pattern(game_str, pattern, starting_indx = 0):
     ''' 
     Identifies the index of the first time a pattern is found within a game string
     '''
-    pattern_indx = game_str.find(pattern)
+    pattern_indx = game_str.find(pattern, starting_indx)
     return pattern_indx
 
 def compare_patterns(game_str, pattern1, pattern2):
