@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+
 #these will go into dataproc.py
 def game_to_string(packed_game):
     '''
@@ -40,7 +41,7 @@ def compare_patterns(game_str, pattern1, pattern2):
             winning_indx = None
     return winning_pattern, winning_indx
 
-def remove_cards(game_str, winning_indx): #maybe change later to .find to make it run faster 
+def remove_cards(game_str, winning_indx):
     ''' 
     Removes all cards from a game string that come before the winning pattern, and the winning pattern itself. Returns the shortened string
     '''
