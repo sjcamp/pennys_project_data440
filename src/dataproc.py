@@ -1,9 +1,13 @@
+
+import numpy as np
+import pandas as pd
 #these will go into dataproc.py
-def game_to_string(game):
+def game_to_string(packed_game):
     '''
     Turns an array from game_history into a string for pattern matching
     '''
-    game_str = "".join(str(card)for card in game)
+    unpacked_game = np.unpackbits(packed_game)
+    game_str = "".join(str(card)for card in unpacked_game[:52]) 
     return game_str
 
 def find_pattern(game_str, pattern):
