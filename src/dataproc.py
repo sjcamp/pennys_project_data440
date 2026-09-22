@@ -18,12 +18,12 @@ def find_pattern(game_str, pattern, starting_indx = 0):
     pattern_indx = game_str.find(pattern, starting_indx)
     return pattern_indx
 
-def compare_patterns(game_str, pattern1, pattern2):
+def compare_patterns(game_str, pattern1, pattern2, starting_indx = 0):
     ''' 
     Compares two patterns to see which one appears first within a game string. Returns the winning pattern and its index
     '''
-    pattern1_indx = find_pattern(game_str, pattern1) #find index of first pattern
-    pattern2_indx = find_pattern(game_str, pattern2) #find index of second pattern
+    pattern1_indx = find_pattern(game_str, pattern1, starting_indx) #find index of first pattern
+    pattern2_indx = find_pattern(game_str, pattern2, starting_indx) #find index of second pattern
 
     if 0 <= pattern1_indx: #if pattern 1 is found (not index -1):
         if pattern1_indx < pattern2_indx or pattern2_indx == -1: #if pattern 2 is larger than pattern 1 or pattern 2 is not found then pattern 1 wins
@@ -41,9 +41,27 @@ def compare_patterns(game_str, pattern1, pattern2):
             winning_indx = None
     return winning_pattern, winning_indx
 
-def remove_cards(game_str, winning_indx):
+def score_game(game_str,pattern1,pattern2):
     ''' 
-    Removes all cards from a game string that come before the winning pattern, and the winning pattern itself. Returns the shortened string
+    Scores a single game string, returning tricks1, tricks2, cards1, cards2
     '''
-    new_str = game_str[winning_indx+3:]
-    return new_str
+    tricks1 = 0 #initialize variables to store tricks and cards
+    tricks2 = 0
+    cards1 = 0
+    cards2 = 0
+    cards_left = len(game_str) ##initialize to store cards left
+    starting_indx=0 #begin at index 0, will get updated in loop
+    while cards_left > 0: #while there are cards left in the deck
+        winning_pattern, winning_indx = compare_patterns(game_str,pattern1,pattern2,starting_indx) #compare to find which pattern appears first
+        if winning_pattern != None: #if at least one pattern is found
+            if winning_pattern == pattern1: #update tricks and cards according to winner
+                tricks1 += 1 #add one trick
+                cards1 += ((winning_indx + 3) - starting_indx) #add the number of cards since the starting index (+3 to account for 2 more cards in pattern and since index is zero based)
+            elif winning_pattern == pattern2: #same if pattern 2 wins
+                tricks2 += 1
+                cards2 += ((winning_indx + 3) - starting_indx)
+            cards_left = (len(game_str)) - (winning_indx + 3) #if a pattern was found, update cards left by subracting the total cards taken from original deck length
+            starting_indx = (winning_indx+3) #if a pattern was found, update the starting index so next time the loop runs it starts after the cards already won
+        else:
+            cards_left = 0 #if neither pattern was found, update cards_left to zero, ending the loop
+    return tricks1, tricks2, cards1, cards2
