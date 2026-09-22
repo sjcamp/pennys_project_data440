@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 
-#these will go into dataproc.py
 def game_to_string(packed_game):
     '''
     Turns an array from game_history into a string for pattern matching
@@ -65,3 +64,31 @@ def score_game(game_str,pattern1,pattern2):
         else:
             cards_left = 0 #if neither pattern was found, update cards_left to zero, ending the loop
     return tricks1, tricks2, cards1, cards2
+
+def score_by_tricks(game_str, pattern1, pattern2):
+    ''' 
+    Returns 1 if person 1 wins by tricks, 2 for person 2, 3 for tie, and 0 for any other case
+    '''
+    tricks1, tricks2, cards1, cards2 = score_game(game_str, pattern1, pattern2)
+    if tricks1 > tricks2: #person 1 wins
+        return 1
+    elif tricks2 > tricks1: #person 2 wins
+        return 2
+    elif tricks1 == tricks2: #tie
+        return 3
+    else:
+        return 0
+    
+def score_by_cards(game_str, pattern1, pattern2):
+    ''' 
+    Returns 1 if person 1 wins by cards, 2 for person 2, 3 for tie, and 0 for any other case
+    '''
+    tricks1, tricks2, cards1, cards2 = score_game(game_str, pattern1, pattern2)
+    if cards1 > cards2: #person 1 wins
+        return 1
+    elif cards2 > cards1: #person 2 wins
+        return 2
+    elif cards1 == cards2: #tie
+        return 3
+    else:
+        return 0
