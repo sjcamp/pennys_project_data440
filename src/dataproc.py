@@ -7,8 +7,8 @@ def game_to_string(packed_game):
     '''
     Turns an array from game_history into a string for pattern matching
     '''
-    unpacked_game = np.unpackbits(packed_game)
-    game_str = "".join(str(card)for card in unpacked_game[:52]) 
+    unpacked_game = np.unpackbits(packed_game) #unpack bits 
+    game_str = "".join(str(card)for card in unpacked_game[:52])  #turn game into string and ensure there is 52 cards 
     return game_str
 
 def find_pattern(game_str, pattern):
