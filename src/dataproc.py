@@ -88,16 +88,16 @@ def score_game(game_str,pattern1,pattern2):
     new_row = [game_str,pattern1,pattern2,tricks1,tricks2,cards1,cards2,winner_tricks,winner_cards]
     return new_row
 
+opp_patterns = ['000','001','010','011','100','101','110','111']    
 my_patterns = ['000','001','010','011','100','101','110','111']
-opp_patterns = ['000','001','010','011','100','101','110','111']
 
 def run_all_patterns (game_str):
     ''' 
     tries all (different) patterns against each other for a single game string, returns a list containing lists of score info for each combination
     '''
     new_rows = [] #initialize list to store new score info as rows are calculated
-    for pattern1 in my_patterns: #run each combination of my patterns and opponent's patterns
-        for pattern2 in opp_patterns:
+    for pattern1 in opp_patterns: #run each combination of my patterns and opponent's patterns
+        for pattern2 in my_patterns:
             if pattern1 != pattern2: #exclude cases where both patterns are the same
                 new_row = score_game(game_str, pattern1, pattern2) #runs score_game for each combination and gets info to store
                 new_rows.append(new_row) #appends info to broader list for results from all combinations
@@ -111,12 +111,47 @@ def get_results_for_new_games(game_history):
     new_scores = [] #list to store info from each game in game_history using each combination
     for game in game_history:
         game_str = game_to_string(game) #unpack game and turn into string
-        game_results = run_all_patterns(game_str) #try all patterns for game and store info as game_results
-        # add code to store game results in data folder
+        game_results = run_all_patterns(game_str) #try all patterns for game and store info as game_resultsr
         #for now storing as a dataframe but could change to .npz
-    new_scores.append(game_results) #append game info to list containing info on all games in game_history
-    new_scores_df = pd.DataFrame(game_results, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
-    
-    #add some code here to make sure the data goes to the data folder
-
+        new_scores.append(game_results) #append game info to list containing info on all games in game_history
+    merged_scores = [results for game in new_scores for results in game] #fix shape to turn into dataframe (got help from ChatGPT)
+    new_scores_df = pd.DataFrame(merged_scores, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
     return new_scores_df
+
+def calc_probs(df, pattern1, pattern2):
+    subset = df[(df['pattern1']==pattern1) & (df['pattern2']==pattern2)] #subset the dataframe to get only rows with the choice patterns
+    prob_wintricks = len(subset[subset['winner_tricks'] == 2]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where I (pattern2) wins by tricks divided by total rows in the subset, multiplied by 100 to be a percent
+    prob_tietricks = len(subset[subset['winner_tricks'] == 3]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where they tie by tricks divided by total rows in the subset, multiplied by 100 to be a percent
+    prob_wincards = len(subset[subset['winner_cards'] == 2]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where I (pattern2) wins by cards divided by total rows in the subset, multiplied by 100 to be a percent
+    prob_tiecards = len(subset[subset['winner_cards'] == 3]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where they tie by cards divided by total rows in the subset, multiplied by 100 to be a percent
+    return int(prob_wintricks), int(prob_tietricks), int(prob_wincards), int(prob_tiecards) #return as integers
+
+
+def make_prob_arrays(game_history):
+    ''' 
+    Produces 4 probability arrays (winning by tricks, tying by tricks, winning by cards, tying by cards) 
+    '''
+    df = get_results_for_new_games(game_history) #process the data toget the dataframe containing results
+    #initialize 4 arrays of 0s to store probabilities
+    p_wintricks_array = np.zeros((8,8),dtype=int)
+    p_tietricks_array = np.zeros((8,8),dtype=int)
+    p_wincards_array = np.zeros((8,8),dtype=int)
+    p_tiecards_array = np.zeros((8,8),dtype=int)
+    
+    #for loops to update values in the arrays
+    for i in range(8):
+        for j in range(8):
+            if j != i:
+                prob_wintricks, prob_tietricks, prob_wincards, prob_tiecards = calc_probs(df,opp_patterns[i],my_patterns[j]) #calculate each probability at given combination of patterns
+                p_wintricks_array[i][j] = prob_wintricks #update arrays
+                p_tietricks_array[i][j] = prob_tietricks
+                p_wincards_array[i][j] = prob_wincards
+                p_tiecards_array[i][j] = prob_tiecards
+            else:
+                p_wintricks_array[i][j] = 0 #keep the diagonals as 0
+                p_tietricks_array[i][j] = 0
+                p_wincards_array[i][j] = 0
+                p_tiecards_array[i][j] = 0
+
+    return p_wintricks_array, p_tietricks_array, p_wincards_array, p_tiecards_array 
+    #need code to save these in data folder and access in dataviz.py (also need to figure out how to update probabilities when rerunning)
