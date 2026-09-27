@@ -14,7 +14,7 @@ from datagen import generate_data
 from dataproc import make_count_arrays
 from datavis import update_visualizations
 
-
+#add Argument Parser to allow for user to pick the games and seeds 
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate, score, and visualize new decks for the card game.")
     parser.add_argument(

@@ -119,12 +119,12 @@ def get_results_for_new_games(game_history, save=False):
     merged_scores = [results for game in new_scores for results in game] #fix shape to turn into dataframe (got help from ChatGPT)
     new_scores_df = pd.DataFrame(merged_scores, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
 
-    if save: #only save the full results dataframe if explicitly requested
-        #similar to datagen.py for saving to /data
-        output_dir = Path('./data')
-        output_dir.mkdir(parents=True, exist_ok=True)
-        arr = new_scores_df.to_records(index=False) #converts df to numpy array 
-        np.savez_compressed(output_dir / "game_results_array.npz", data=arr)
+    # if save: #only save the full results dataframe if explicitly requested
+    #     #similar to datagen.py for saving to /data
+    #     output_dir = Path('./data')
+    #     output_dir.mkdir(parents=True, exist_ok=True)
+    #     arr = new_scores_df.to_records(index=False) #converts df to numpy array 
+    #     np.savez_compressed(output_dir / "game_results_array.npz", data=arr)
 
     return new_scores_df
 
@@ -168,6 +168,8 @@ def calc_probs(df, pattern1, pattern2):
 
 #     return p_wintricks_array, p_tietricks_array, p_wincards_array, p_tiecards_array 
 
+#below added calc_counts and make_count_arrays with help from claude to help count every game won (not just latest batch) and run it for every combination 
+
 
 def calc_counts(df, pattern1, pattern2):
     '''
@@ -190,7 +192,7 @@ def make_count_arrays(game_history):
     many runs of different sizes and then converted to a percentage once, at
     visualization time (see datavis.load_all_scored_data / counts_to_pct).
     '''
-    df = get_results_for_new_games(game_history) #save=False by default -- this dataframe is only an intermediate here
+    df = get_results_for_new_games(game_history) 
     win_tricks_array = np.zeros((8,8), dtype=int)
     tie_tricks_array = np.zeros((8,8), dtype=int)
     win_cards_array = np.zeros((8,8), dtype=int)

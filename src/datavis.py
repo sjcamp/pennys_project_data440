@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-#same tick labels as before, in the same order as opp_patterns/my_patterns in dataproc.py
-#(000->BBB, 001->BBR, 010->BRB, 011->BRR, 100->RBB, 101->RBR, 110->RRB, 111->RRR)
+#same tick labels as Prof Smith 
 x_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 y_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 
@@ -45,15 +44,7 @@ def counts_to_pct(count_array, n_games_total):
 
 def plot_heatmap(win_data, tie_data, title, output_path):
     '''
-    Draws one heatmap using the same styling/scoring-display logic as the original
-    two heatmaps in this file (Blues colormap, minor gridlines, BBB/BBR/... tick
-    labels). Used for both creating a heatmap the first time and updating it later --
-    savefig overwrites the existing file at output_path either way.
-
-    win_data/tie_data: 8x8 percentage arrays (0-100), from my choice's perspective.
-    Each cell is shaded by win_data and labeled "win (tie)", rounded to the nearest
-    integer with no % sign. Text is white on dark (high-win) cells and black on
-    light ones, based on each cell's actual rendered color, so it stays readable.
+    Draws heatmap
     '''
     fig, ax = plt.subplots()
     cmap = plt.get_cmap("Blues")
