@@ -105,9 +105,10 @@ def run_all_patterns (game_str):
     return new_rows
 
 
-def get_results_for_new_games(game_history):
+def get_results_for_new_games(game_history, save=False):
     ''' 
-    scores all games in game_history using all patterns, returns a dataframe with results info to calcualate probabilities
+    scores all games in game_history using all patterns, returns a dataframe with results info to calcualate probabilities.
+   
     '''
     new_scores = [] #list to store info from each game in game_history using each combination
     for game in game_history:
@@ -118,11 +119,12 @@ def get_results_for_new_games(game_history):
     merged_scores = [results for game in new_scores for results in game] #fix shape to turn into dataframe (got help from ChatGPT)
     new_scores_df = pd.DataFrame(merged_scores, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
 
-    #similar to datagen.py for saving to /data
-    output_dir = Path('./data')
-    output_dir.mkdir(parents=True, exist_ok=True)
-    arr = new_scores_df.to_records(index=False) #converts df to numpy array 
-    np.savez_compressed(output_dir / "game_results_array.npz", data=arr)
+    if save: #only save the full results dataframe if explicitly requested
+        #similar to datagen.py for saving to /data
+        output_dir = Path('./data')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        arr = new_scores_df.to_records(index=False) #converts df to numpy array 
+        np.savez_compressed(output_dir / "game_results_array.npz", data=arr)
 
     return new_scores_df
 
@@ -135,31 +137,75 @@ def calc_probs(df, pattern1, pattern2):
     return int(prob_wintricks), int(prob_tietricks), int(prob_wincards), int(prob_tiecards) #return as integers
 
 
-def make_prob_arrays(game_history):
-    ''' 
-    Produces 4 probability arrays (winning by tricks, tying by tricks, winning by cards, tying by cards) 
-    '''
-    df = get_results_for_new_games(game_history) #process the data toget the dataframe containing results
-    #initialize 4 arrays of 0s to store probabilities
-    p_wintricks_array = np.zeros((8,8),dtype=int)
-    p_tietricks_array = np.zeros((8,8),dtype=int)
-    p_wincards_array = np.zeros((8,8),dtype=int)
-    p_tiecards_array = np.zeros((8,8),dtype=int)
+# def make_prob_arrays(game_history): # commented out to keep for looking back on but no longer used
+#     ''' 
+#     Produces 4 probability arrays (winning by tricks, tying by tricks, winning by cards, tying by cards) 
+#     for a single batch of games. Note: these are percentages, and percentages from
+#     different-sized batches can't simply be added together to combine runs -- see
+#     make_count_arrays below, which is what main.py now uses for that purpose.
+#     '''
+#     df = get_results_for_new_games(game_history) #process the data toget the dataframe containing results
+#     #initialize 4 arrays of 0s to store probabilities
+#     p_wintricks_array = np.zeros((8,8),dtype=int)
+#     p_tietricks_array = np.zeros((8,8),dtype=int)
+#     p_wincards_array = np.zeros((8,8),dtype=int)
+#     p_tiecards_array = np.zeros((8,8),dtype=int)
     
-    #for loops to update values in the arrays
+#     #for loops to update values in the arrays
+#     for i in range(8):
+#         for j in range(8):
+#             if j != i:
+#                 prob_wintricks, prob_tietricks, prob_wincards, prob_tiecards = calc_probs(df,opp_patterns[i],my_patterns[j]) #calculate each probability at given combination of patterns
+#                 p_wintricks_array[i][j] = prob_wintricks #update arrays
+#                 p_tietricks_array[i][j] = prob_tietricks
+#                 p_wincards_array[i][j] = prob_wincards
+#                 p_tiecards_array[i][j] = prob_tiecards
+#             else:
+#                 p_wintricks_array[i][j] = 0 #keep the diagonals as 0
+#                 p_tietricks_array[i][j] = 0
+#                 p_wincards_array[i][j] = 0
+#                 p_tiecards_array[i][j] = 0
+
+#     return p_wintricks_array, p_tietricks_array, p_wincards_array, p_tiecards_array 
+
+
+def calc_counts(df, pattern1, pattern2):
+    '''
+    Same idea as calc_probs, but returns raw counts instead of percentages so that
+    results from different-sized runs can be correctly combined later. 
+    '''
+    subset = df[(df['pattern1']==pattern1) & (df['pattern2']==pattern2)]
+    win_tricks = int((subset['winner_tricks'] == 2).sum())
+    tie_tricks = int((subset['winner_tricks'] == 3).sum())
+    win_cards = int((subset['winner_cards'] == 2).sum())
+    tie_cards = int((subset['winner_cards'] == 3).sum())
+    return win_tricks, tie_tricks, win_cards, tie_cards
+
+
+def make_count_arrays(game_history):
+    '''
+    Scores game_history and returns 4 raw-count arrays (win by tricks, tie by
+    tricks, win by cards, tie by cards) plus n_games, the number of decks scored.
+    This is what gets saved to disk per-run: counts + n_games can be summed across
+    many runs of different sizes and then converted to a percentage once, at
+    visualization time (see datavis.load_all_scored_data / counts_to_pct).
+    '''
+    df = get_results_for_new_games(game_history) #save=False by default -- this dataframe is only an intermediate here
+    win_tricks_array = np.zeros((8,8), dtype=int)
+    tie_tricks_array = np.zeros((8,8), dtype=int)
+    win_cards_array = np.zeros((8,8), dtype=int)
+    tie_cards_array = np.zeros((8,8), dtype=int)
+
+    n_games = len(game_history)
+
     for i in range(8):
         for j in range(8):
             if j != i:
-                prob_wintricks, prob_tietricks, prob_wincards, prob_tiecards = calc_probs(df,opp_patterns[i],my_patterns[j]) #calculate each probability at given combination of patterns
-                p_wintricks_array[i][j] = prob_wintricks #update arrays
-                p_tietricks_array[i][j] = prob_tietricks
-                p_wincards_array[i][j] = prob_wincards
-                p_tiecards_array[i][j] = prob_tiecards
-            else:
-                p_wintricks_array[i][j] = 0 #keep the diagonals as 0
-                p_tietricks_array[i][j] = 0
-                p_wincards_array[i][j] = 0
-                p_tiecards_array[i][j] = 0
+                win_tricks, tie_tricks, win_cards, tie_cards = calc_counts(df, opp_patterns[i], my_patterns[j])
+                win_tricks_array[i][j] = win_tricks
+                tie_tricks_array[i][j] = tie_tricks
+                win_cards_array[i][j] = win_cards
+                tie_cards_array[i][j] = tie_cards
+            #diagonal (j == i) left as 0, same as make_prob_arrays
 
-    return p_wintricks_array, p_tietricks_array, p_wincards_array, p_tiecards_array 
-    #need code to save these in data folder and access in dataviz.py (also need to figure out how to update probabilities when rerunning)
+    return win_tricks_array, tie_tricks_array, win_cards_array, tie_cards_array, n_games
