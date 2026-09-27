@@ -5,8 +5,8 @@ import time
 
 
 
-#this will go into datagen.py
-#still need to figue out how to store the data in data folder
+# this will go into datagen.py
+# still need to figue out how to store the data in data folder
 def generate_data(seed,trials):
     ''' 
     Generates decks of shuffled cards according to specified number of trials and seed
@@ -25,5 +25,5 @@ def generate_data(seed,trials):
     return game_history 
 
 
-if __name__ == "__main__":
-    generate_data(seed=42, trials=10)
+# if __name__ == "__main__":
+#     generate_data(seed=42, trials=10)

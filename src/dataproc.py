@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 def game_to_string(packed_game):
     '''
@@ -116,6 +117,13 @@ def get_results_for_new_games(game_history):
         new_scores.append(game_results) #append game info to list containing info on all games in game_history
     merged_scores = [results for game in new_scores for results in game] #fix shape to turn into dataframe (got help from ChatGPT)
     new_scores_df = pd.DataFrame(merged_scores, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
+
+    #similar to datagen.py for saving to /data
+    output_dir = Path('./data')
+    output_dir.mkdir(parents=True, exist_ok=True)
+    arr = new_scores_df.to_records(index=False) #converts df to numpy array 
+    np.savez_compressed(output_dir / "game_results_array.npz", data=arr)
+
     return new_scores_df
 
 def calc_probs(df, pattern1, pattern2):
