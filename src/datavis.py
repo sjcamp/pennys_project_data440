@@ -50,9 +50,15 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     Draws heatmap
     '''
     fig, ax = plt.subplots()
-    cmap = plt.get_cmap("Blues")
-    ax.imshow(win_data, cmap=cmap, vmin=0, vmax=100)
+    #cmap = plt.get_cmap("Blues")
+    masked_data = np.ma.masked_where((win_data == 0) & (tie_data == 0), win_data) #mask data to get grayed out cells  
+    newcmap = plt.get_cmap("Blues").copy()
+    newcmap.set_bad(color="lightgray")
+    ax.imshow(masked_data, cmap=newcmap, vmin=0, vmax=100)
     n_rows, n_cols = win_data.shape
+ 
+
+    
 
     #sets grid lines and ticks
     ax.set_xticks(np.arange(-0.5, n_cols, 1), minor=True)
@@ -70,7 +76,9 @@ def plot_heatmap(win_data, tie_data, title, output_path):
         for j in range(n_cols):
             win_val = win_data[i][j]
             tie_val = tie_data[i][j]
-            r, g, b, _ = cmap(win_val / 100)
+            if win_val == 0 and tie_val == 0: 
+                continue # leaves the diagonal cells blank 
+            r, g, b, _ = newcmap(win_val / 100)
             luminance = 0.299 * r + 0.587 * g + 0.114 * b
             text_color = "white" if luminance < 0.5 else "black"
             ax.text(
