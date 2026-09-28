@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+#help from claude to create loops and functions for code I wrote to add npz file information to the cells 
 
-#same tick labels as Prof Smith 
+#same tick labels as Prof Smith with all 8 combinations 
 x_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 y_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 
@@ -10,15 +11,17 @@ y_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 def load_all_scored_data(data_dir=Path('./data')):
     '''
     Reads every previously-saved scored-results file (*_scored.npz) in data_dir and
-    sums their count arrays together, so all games ever scored -- past runs plus the
-    current one -- count toward the totals.
+    sums their count arrays together, so all games ever scored, past runs plus the
+    current one counts toward the totals.
     '''
+    #empty cells in heatmap
     win_tricks_total = np.zeros((8, 8), dtype=int)
     tie_tricks_total = np.zeros((8, 8), dtype=int)
     win_cards_total = np.zeros((8, 8), dtype=int)
     tie_cards_total = np.zeros((8, 8), dtype=int)
     n_games_total = 0
 
+    #loop to add npz data  
     data_dir = Path(data_dir)
     scored_files = sorted(data_dir.glob("*_scored.npz"))
     for file in scored_files:
@@ -39,7 +42,7 @@ def counts_to_pct(count_array, n_games_total):
     '''
     if n_games_total == 0:
         return np.zeros((8, 8))
-    return (count_array / n_games_total) * 100
+    return (count_array / n_games_total) * 100 
 
 
 def plot_heatmap(win_data, tie_data, title, output_path):
@@ -62,8 +65,7 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     ax.set_xticks(np.arange(n_cols))
     ax.set_yticks(np.arange(n_rows))
 
-    #label each cell with "win (tie)", picking text color by that cell's actual
-    #rendered luminance so it reads clearly whether the cell is light or dark
+    #makes text readable on the cells 
     for i in range(n_rows):
         for j in range(n_cols):
             win_val = win_data[i][j]

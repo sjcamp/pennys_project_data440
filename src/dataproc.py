@@ -168,7 +168,7 @@ def calc_probs(df, pattern1, pattern2):
 
 #     return p_wintricks_array, p_tietricks_array, p_wincards_array, p_tiecards_array 
 
-#below added calc_counts and make_count_arrays with help from claude to help count every game won (not just latest batch) and run it for every combination 
+#below added calc_counts and make_count_arrays with help from claude and previous code to help count every game won (not just latest batch) and run it for every combination 
 
 
 def calc_counts(df, pattern1, pattern2):
