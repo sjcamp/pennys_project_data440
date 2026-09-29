@@ -49,7 +49,7 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     '''
     Draws heatmap
     '''
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize = (10, 8))
     #cmap = plt.get_cmap("Blues")
     masked_data = np.ma.masked_where((win_data == 0) & (tie_data == 0), win_data) #mask data to get grayed out cells  
     newcmap = plt.get_cmap("Blues").copy()
@@ -66,7 +66,7 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     ax.set_xticks(range(len(x_tick_labels)), labels=x_tick_labels)
     ax.set_yticks(range(len(y_tick_labels)), labels=y_tick_labels)
 
-    ax.grid(which='minor', color='steelblue', linestyle='-', linewidth=1.5)
+    ax.grid(which='minor', color='white', linestyle='-', linewidth=1.5)
     ax.tick_params(which='minor', bottom=False, left=False)
     ax.set_xticks(np.arange(n_cols))
     ax.set_yticks(np.arange(n_rows))
@@ -90,7 +90,7 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     ax.set_xlabel("My Choice", fontsize=12)
     ax.set_ylabel("Opponent Choice", fontsize=12)
 
-    fig.savefig(output_path)
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
 
