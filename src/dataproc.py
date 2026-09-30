@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-def game_to_string(packed_game):
+def game_to_string(packed_game: np.ndarray) ->str:
     '''
     Turns an array from game_history into a string for pattern matching
     '''
@@ -11,14 +11,14 @@ def game_to_string(packed_game):
     game_str = "".join(str(card)for card in unpacked_game[:52])  #turn game into string and ensure there is 52 cards 
     return game_str
 
-def find_pattern(game_str, pattern, starting_indx = 0):
+def find_pattern(game_str: str, pattern: str, starting_indx: int = 0) -> int:
     ''' 
     Identifies the index of the first time a pattern is found within a game string
     '''
     pattern_indx = game_str.find(pattern, starting_indx)
     return pattern_indx
 
-def compare_patterns(game_str, pattern1, pattern2, starting_indx = 0):
+def compare_patterns(game_str: str, pattern1: str, pattern2: str, starting_indx: int = 0) -> tuple[str,int]:
     ''' 
     Compares two patterns to see which one appears first within a game string. Returns the winning pattern and its index
     '''
@@ -41,7 +41,7 @@ def compare_patterns(game_str, pattern1, pattern2, starting_indx = 0):
             winning_indx = None
     return winning_pattern, winning_indx
 
-def score_by_tricks(tricks1, tricks2):
+def score_by_tricks(tricks1:int, tricks2:int) -> int:
     if tricks1 > tricks2: #person 1 wins
         return 1
     elif tricks2 > tricks1: #person 2 wins
@@ -51,7 +51,7 @@ def score_by_tricks(tricks1, tricks2):
     else:
         return 0
     
-def score_by_cards(cards1, cards2):
+def score_by_cards(cards1: int, cards2:int) -> int:
     if cards1 > cards2: #person 1 wins
         return 1
     elif cards2 > cards1: #person 2 wins
