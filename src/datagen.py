@@ -6,7 +6,7 @@ import time
 
 
 # this will go into datagen.py
-def generate_data(seed, trials, save=False):
+def generate_data(seed:int, trials:int, save:bool=False) -> np.ndarray:
     ''' 
     Generates decks of shuffled cards according to specified number of trials and seed.
     '''
