@@ -1,12 +1,14 @@
 # pennys_project_data440
 First Data440 Project
 
-Explain Penney's Game and the two variations of the H-N Game. Do not assume the reader is already familiar with the game.
+Penney’s Game is a simple coin tossing game for two players. Each player picks a sequence (3 or larger) of heads and tails. The coin is tossed repeatedly until one of the sequences is reached. A player wins if their sequence appears before the other player’s sequence. For any sequence the first player picks, the second player can pick a better sequence with higher chances of winning. If each player picks sequences of 3, the second player can maximize their chances of winning by picking the opposite of the first player’s second choice, followed by the first player's first two choices. So, if Player 1 picks HTH, Player 2 should pick HHT. 
 
-Insert explanation here 
+The Humble-Nishiyama (H-N) Randomness Game is a variation on Penney’s Game, where a deck of cards is used instead of a coin. After each player picks their 3 card sequence, cards are drawn until one of the sequences appears. At this point, that player earns a “trick”, and takes all the cards that have been drawn since the last trick. The game continues until all cards are gone from the deck, and the player with more tricks wins the game. Unlike the version with coins, players are no longer sampling with replacement, so the odds of a player winning the next trick change throughout the game as cards are removed from the deck. In Ron’s Variation of the H-N Randomness Game, players are scored on the number of cards they have at the end of the game, rather than the number of tricks. The purpose of this investigation is to explore the differences between these two scoring methods, to see if the optimal strategy changes when scoring with cards instead of tricks.
 
-Explain the purpose of our investigation.
+Our code simulates the H-N game by generating decks of cards, scoring each deck with every combination of sequences by both number of tricks and number of cards, then returning heatmaps showing the percent chance of winning for each scoring method.  To run our code, open a terminal. Once you are in the correct directory and have run uv sync, type: uv run main.py --games {number of games to run}. Optionally, you can specify a seed to generate the additional decks with by adding --seed {seed} to the end of the line. So, if you wanted to run 100 games with seed 17, you would type:
 
-Give a brief "how-to" of how to run your code.
+uv run main.py --games 100 --seed 17
 
-Discuss your findings. What are the optimal strategies for each player? Are these results consistent between the two versions of the game?
+When scoring by tricks, we found that the best strategy for player 2 is the same as the best strategy for the coin-toss version: pick the opposite of player 1’s second choice, followed by their first two choices. When scoring by cards, this strategy would still result in player 2 winning most games, but a better strategy appears for when player 1 picks the sequence RBR or BRB. While the original strategy would lead player 2 to pick RRB for RBR and BBR for BRB, they only have an 86% chance of winning with those choices when scoring by cards. If they instead pick BBR for RBR and RRB for BBR, those chances increase to 92%.
+
+For player 1, whether scoring by tricks or cards, the best strategy is the same. If player 1 believes their opponent does not know the optimal strategy for player 2, they should pick either RRB or BBR, as these choices result in player 1 being very likely to win for all sequences player 2 chooses except the optimal one, in which case player 1 is very likely to lose. If player 1 believes that player 2 does know the optimal strategy, they are very likely to lose anyway, but could minimize their chance of losing by picking RBR or BRB, whether scoring by tricks or cards.
