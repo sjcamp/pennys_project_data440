@@ -8,7 +8,7 @@ x_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 y_tick_labels = ['BBB', 'BBR', 'BRB', 'BRR', 'RBB', 'RBR', 'RRB', 'RRR']
 
 
-def load_all_scored_data(data_dir=Path('./data')):
+def load_all_scored_data(data_dir:Path = Path('./data'))->tuple[int,int,int,int,int,int]:
     '''
     Reads every previously-saved scored-results file (*_scored.npz) in data_dir and
     sums their count arrays together, so all games ever scored, past runs plus the
@@ -35,7 +35,7 @@ def load_all_scored_data(data_dir=Path('./data')):
     return win_tricks_total, tie_tricks_total, win_cards_total, tie_cards_total, n_games_total
 
 
-def counts_to_pct(count_array, n_games_total):
+def counts_to_pct(count_array:np.ndarray, n_games_total:int)->int:
     '''
     Converts a combined count array into a percentage array using the total number
     of decks scored across all runs.
@@ -45,7 +45,7 @@ def counts_to_pct(count_array, n_games_total):
     return (count_array / n_games_total) * 100 
 
 
-def plot_heatmap(win_data, tie_data, title, output_path):
+def plot_heatmap(win_data:np.ndarray, tie_data:np.ndarray, title:str, output_path:Path)->None:
     '''
     Draws heatmap
     '''
@@ -94,7 +94,7 @@ def plot_heatmap(win_data, tie_data, title, output_path):
     plt.close(fig)
 
 
-def update_visualizations(data_dir=Path('./data'), figures_dir=Path('./figures')):
+def update_visualizations(data_dir:Path=Path('./data'), figures_dir:Path=Path('./figures'))->None:
     '''
     Reads all scored data currently in data_dir, combines it into one running total,
     and creates/overwrites the two heatmaps (cards_viz.png, tricks_viz.png) in
