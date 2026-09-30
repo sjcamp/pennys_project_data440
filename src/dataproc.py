@@ -61,7 +61,7 @@ def score_by_cards(cards1: int, cards2:int) -> int:
     else:
         return 0
 
-def score_game(game_str,pattern1,pattern2):
+def score_game(game_str:str,pattern1:str,pattern2:str) -> list:
     ''' 
     Scores a single game string, returning a list of game_str, pattern1, pattern2, tricks1, tricks2, cards1, cards2, winner_tricks, winner_cards to save
     '''
@@ -92,7 +92,7 @@ def score_game(game_str,pattern1,pattern2):
 opp_patterns = ['000','001','010','011','100','101','110','111']    
 my_patterns = ['000','001','010','011','100','101','110','111']
 
-def run_all_patterns (game_str):
+def run_all_patterns (game_str:str) -> list:
     ''' 
     tries all (different) patterns against each other for a single game string, returns a list containing lists of score info for each combination
     '''
@@ -105,7 +105,7 @@ def run_all_patterns (game_str):
     return new_rows
 
 
-def get_results_for_new_games(game_history, save=False):
+def get_results_for_new_games(game_history: np.ndarray, save:bool=False) -> pd.DataFrame:
     ''' 
     scores all games in game_history using all patterns, returns a dataframe with results info to calcualate probabilities.
    
@@ -113,8 +113,7 @@ def get_results_for_new_games(game_history, save=False):
     new_scores = [] #list to store info from each game in game_history using each combination
     for game in game_history:
         game_str = game_to_string(game) #unpack game and turn into string
-        game_results = run_all_patterns(game_str) #try all patterns for game and store info as game_resultsr
-        #for now storing as a dataframe but could change to .npz
+        game_results = run_all_patterns(game_str) #try all patterns for game and store info as game_results
         new_scores.append(game_results) #append game info to list containing info on all games in game_history
     merged_scores = [results for game in new_scores for results in game] #fix shape to turn into dataframe (got help from ChatGPT)
     new_scores_df = pd.DataFrame(merged_scores, columns = ['game_str','pattern1','pattern2','tricks1', 'tricks2', 'cards1', 'cards2', 'winner_tricks','winner_cards'],) #turn into dataframe (may change data storage type later)
@@ -128,7 +127,7 @@ def get_results_for_new_games(game_history, save=False):
 
     return new_scores_df
 
-def calc_probs(df, pattern1, pattern2):
+def calc_probs(df:pd.DataFrame, pattern1:str, pattern2:str) ->tuple[int, int,int,int]:
     subset = df[(df['pattern1']==pattern1) & (df['pattern2']==pattern2)] #subset the dataframe to get only rows with the choice patterns
     prob_wintricks = len(subset[subset['winner_tricks'] == 2]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where I (pattern2) wins by tricks divided by total rows in the subset, multiplied by 100 to be a percent
     prob_tietricks = len(subset[subset['winner_tricks'] == 3]) / len(subset) *100 #calculate probability of winning as the number of rows of the subset where they tie by tricks divided by total rows in the subset, multiplied by 100 to be a percent
@@ -171,7 +170,7 @@ def calc_probs(df, pattern1, pattern2):
 #below added calc_counts and make_count_arrays with help from claude and previous code to help count every game won (not just latest batch) and run it for every combination 
 
 
-def calc_counts(df, pattern1, pattern2):
+def calc_counts(df:pd.DataFrame, pattern1:str, pattern2:str)->tuple[int, int,int,int]:
     '''
     Same idea as calc_probs, but returns raw counts instead of percentages so that
     results from different-sized runs can be correctly combined later. 
@@ -184,7 +183,7 @@ def calc_counts(df, pattern1, pattern2):
     return win_tricks, tie_tricks, win_cards, tie_cards
 
 
-def make_count_arrays(game_history):
+def make_count_arrays(game_history:np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, int]:
     '''
     Scores game_history and returns 4 raw-count arrays (win by tricks, tie by
     tricks, win by cards, tie by cards) plus n_games, the number of decks scored.
